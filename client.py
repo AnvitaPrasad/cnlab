@@ -414,41 +414,77 @@ class LANClient:
                     messagebox.showerror("Error", "No audio devices found")
                     return
                 
-                # Input stream (microphone)
-                self.audio_input_stream = self.audio.open(
-                    format=pyaudio.paInt16,
-                    channels=1,
-                    rate=16000,
-                    input=True,
-                    frames_per_buffer=2048,  # Larger buffer for stability
-                    stream_callback=None  # No callback to avoid conflicts
-                )
+                print(f"🎤 Opening audio devices for {self.username}...")
+                
+                # Get default devices
+                try:
+                    default_input = self.audio.get_default_input_device_info()
+                    default_output = self.audio.get_default_output_device_info()
+                    print(f"   Input device: {default_input['name']}")
+                    print(f"   Output device: {default_output['name']}")
+                except Exception as e:
+                    print(f"   Warning: Could not get default device info: {e}")
+                
+                # Input stream (microphone) - with better error handling
+                try:
+                    self.audio_input_stream = self.audio.open(
+                        format=pyaudio.paInt16,
+                        channels=1,
+                        rate=16000,
+                        input=True,
+                        frames_per_buffer=2048,
+                        input_device_index=None,  # Use default
+                        stream_callback=None
+                    )
+                    print(f"   ✓ Microphone opened")
+                except Exception as e:
+                    raise Exception(f"Microphone error: {e}")
                 
                 # Output stream (speakers)
-                self.audio_output_stream = self.audio.open(
-                    format=pyaudio.paInt16,
-                    channels=1,
-                    rate=16000,
-                    output=True,
-                    frames_per_buffer=2048,  # Larger buffer for stability
-                    stream_callback=None
-                )
+                try:
+                    self.audio_output_stream = self.audio.open(
+                        format=pyaudio.paInt16,
+                        channels=1,
+                        rate=16000,
+                        output=True,
+                        frames_per_buffer=2048,
+                        output_device_index=None,  # Use default
+                        stream_callback=None
+                    )
+                    print(f"   ✓ Speakers opened")
+                except Exception as e:
+                    # Close input stream if output fails
+                    if self.audio_input_stream:
+                        try:
+                            self.audio_input_stream.close()
+                        except:
+                            pass
+                    raise Exception(f"Speaker error: {e}")
                 
                 self.audio_streaming = True
                 # Update button in main thread
                 self.master.after(0, lambda: self.audio_btn.config(text="Stop Audio"))
                 threading.Thread(target=self.stream_audio, daemon=True).start()
-                print(f"🎤 Audio started for {self.username}")
+                print(f"🎤 Audio started successfully for {self.username}")
             except Exception as e:
                 error_msg = str(e)
+                print(f"❌ Audio error: {e}")
+                
                 if "already in use" in error_msg.lower() or "device unavailable" in error_msg.lower():
                     self.master.after(0, lambda: messagebox.showerror("Error", 
                         "Audio device is busy.\n\n" +
                         "This can happen when testing on the same computer.\n" +
                         "Close the other client's audio first, or test on separate computers."))
+                elif "-9999" in error_msg or "Unanticipated host error" in error_msg:
+                    self.master.after(0, lambda: messagebox.showerror("Audio Error", 
+                        "Audio device initialization failed.\n\n" +
+                        "Solutions:\n" +
+                        "1. Grant Microphone permission in System Preferences\n" +
+                        "2. Close other apps using microphone/speakers\n" +
+                        "3. Try restarting the client\n" +
+                        "4. Check if headphones/mic are properly connected"))
                 else:
                     self.master.after(0, lambda e=e: messagebox.showerror("Error", f"Audio error: {e}"))
-                print(f"❌ Audio error: {e}")
         else:
             # Stop audio streaming
             self.audio_streaming = False
@@ -490,6 +526,7 @@ class LANClient:
     
     def stream_audio(self):
         """Stream audio to server"""
+        packet_count = 0
         while self.audio_streaming and self.running:
             try:
                 if not self.audio_input_stream:
@@ -503,6 +540,12 @@ class LANClient:
                 
                 # Send via UDP (using stored port, not GUI widget)
                 self.udp_socket.sendto(packet, (self.server_ip, self.server_udp_port))
+                
+                packet_count += 1
+                # Log every 50 packets to confirm sending
+                if packet_count % 50 == 0:
+                    print(f"🎙️ Sent {packet_count} audio packets")
+                    
             except OSError as e:
                 # Stream was closed, exit gracefully
                 print(f"Audio stream closed: {e}")
@@ -511,7 +554,7 @@ class LANClient:
                 print(f"Audio stream error: {e}")
                 break
         
-        print(f"🎤 Audio streaming thread ended for {self.username}")
+        print(f"🎤 Audio streaming thread ended for {self.username} (sent {packet_count} packets)")
     
     def toggle_presenting(self):
         """Toggle screen sharing"""
@@ -775,10 +818,25 @@ class LANClient:
                         if self.audio_output_stream and self.audio_streaming:
                             # Only play audio from others, not ourselves
                             if username != self.username:
+                                # Log occasionally for debugging
+                                if not hasattr(self, '_audio_packet_count'):
+                                    self._audio_packet_count = {}
+                                
+                                if username not in self._audio_packet_count:
+                                    self._audio_packet_count[username] = 0
+                                
+                                self._audio_packet_count[username] += 1
+                                
+                                # Log every 50 packets
+                                if self._audio_packet_count[username] % 50 == 0:
+                                    print(f"🔊 Received {self._audio_packet_count[username]} audio packets from {username}")
+                                
                                 self.audio_output_stream.write(payload, exception_on_underflow=False)
                     except Exception as e:
-                        # Silently skip audio errors to avoid crashes
-                        pass
+                        # Log audio playback errors occasionally
+                        if not hasattr(self, '_audio_error_logged'):
+                            self._audio_error_logged = True
+                            print(f"⚠️ Audio playback error: {e}")
             
             except Exception as e:
                 if self.running:
