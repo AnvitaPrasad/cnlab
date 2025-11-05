@@ -28,22 +28,18 @@ class LANClient:
         self.master.geometry("1400x900")
         self.master.protocol("WM_DELETE_WINDOW", self.on_closing)
         
-        # Sleek modern color scheme - Deep dark theme with neon accents
+        # Modern color scheme - Dark theme with cyan/purple accents
         self.colors = {
-            'bg_dark': '#0d1117',           # Deep dark background
-            'bg_medium': '#161b22',         # Card background
-            'bg_light': '#21262d',          # Input background
-            'bg_hover': '#30363d',          # Hover state
-            'accent_cyan': '#58a6ff',       # Bright cyan
-            'accent_purple': '#bc8cff',     # Soft purple
-            'accent_green': '#3fb950',      # Green success
-            'accent_red': '#f85149',        # Red accent
-            'accent_orange': '#ff9500',     # Orange accent
-            'text_light': '#c9d1d9',        # Light text
-            'text_dim': '#8b949e',          # Dimmed text
-            'border': '#30363d',            # Border color
-            'success': '#3fb950',
-            'error': '#f85149'
+            'bg_dark': '#1a1a2e',
+            'bg_medium': '#16213e',
+            'bg_light': '#0f3460',
+            'accent_cyan': '#00d4ff',
+            'accent_purple': '#9d4edd',
+            'accent_green': '#06ffa5',
+            'text_light': '#ffffff',
+            'text_dim': '#a0a0a0',
+            'error': '#ff6b6b',
+            'success': '#06ffa5'
         }
         
         # Configure main window background
@@ -89,123 +85,77 @@ class LANClient:
         frame = tk.Frame(self.master, bg=self.colors['bg_dark'])
         frame.pack(expand=True, fill=tk.BOTH)
         
-        # Center container with rounded effect
-        center = tk.Frame(frame, bg=self.colors['bg_medium'], padx=50, pady=50)
+        # Center container
+        center = tk.Frame(frame, bg=self.colors['bg_medium'], padx=40, pady=40)
         center.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
         
-        # Large icon/logo area
-        logo_frame = tk.Frame(center, bg=self.colors['bg_medium'])
-        logo_frame.grid(row=0, column=0, columnspan=2, pady=(0, 20))
-        
-        # Title with modern styling
-        title = tk.Label(logo_frame, text="🌐", 
-                        font=('SF Pro Display', 48),
+        # Title with gradient effect (simulated)
+        title = tk.Label(center, text="🌐 LAN Collaboration Suite", 
+                        font=('Helvetica Neue', 24, 'bold'),
                         bg=self.colors['bg_medium'], 
                         fg=self.colors['accent_cyan'])
-        title.pack()
+        title.grid(row=0, column=0, columnspan=2, pady=(0, 10))
         
-        title_text = tk.Label(logo_frame, text="LAN Collaboration Suite", 
-                        font=('SF Pro Display', 26, 'bold'),
-                        bg=self.colors['bg_medium'], 
-                        fg=self.colors['text_light'])
-        title_text.pack(pady=(10, 0))
-        
-        subtitle = tk.Label(logo_frame, text="Connect • Collaborate • Communicate", 
-                           font=('SF Pro Display', 12),
+        subtitle = tk.Label(center, text="Connect • Collaborate • Communicate", 
+                           font=('Helvetica Neue', 11),
                            bg=self.colors['bg_medium'], 
                            fg=self.colors['text_dim'])
-        subtitle.pack(pady=(5, 0))
-        
-        # Divider line
-        divider = tk.Frame(center, bg=self.colors['border'], height=1)
-        divider.grid(row=1, column=0, columnspan=2, sticky='ew', pady=20)
+        subtitle.grid(row=1, column=0, columnspan=2, pady=(0, 30))
         
         # Input fields with modern styling
         fields = [
-            ("👤  Username", "username_entry", "", self.colors['accent_cyan']),
-            ("🌐  Server IP", "server_entry", "127.0.0.1", self.colors['accent_purple']),
-            ("🔌  TCP Port", "tcp_port_entry", "5555", self.colors['accent_green']),
-            ("📡  UDP Port", "udp_port_entry", "5556", self.colors['accent_orange'])
+            ("👤 Username", "username_entry", ""),
+            ("🌐 Server IP", "server_entry", "192.168.1.100"),
+            ("🔌 TCP Port", "tcp_port_entry", "5555"),
+            ("📡 UDP Port", "udp_port_entry", "5556")
         ]
         
-        for idx, (label_text, attr_name, default_val, accent_color) in enumerate(fields, start=2):
-            # Container for each field
-            field_container = tk.Frame(center, bg=self.colors['bg_medium'])
-            field_container.grid(row=idx, column=0, columnspan=2, pady=10, sticky='ew')
-            
+        for idx, (label_text, attr_name, default_val) in enumerate(fields, start=2):
             # Label
-            label = tk.Label(field_container, text=label_text, 
-                           font=('SF Pro Display', 11),
+            label = tk.Label(center, text=label_text, 
+                           font=('Helvetica Neue', 12),
                            bg=self.colors['bg_medium'], 
-                           fg=self.colors['text_dim'],
+                           fg=self.colors['text_light'],
                            anchor='w')
-            label.pack(anchor='w', pady=(0, 5))
+            label.grid(row=idx, column=0, sticky='w', padx=(0, 15), pady=8)
             
-            # Entry with custom styling and border
-            entry_frame = tk.Frame(field_container, bg=accent_color, bd=0)
-            entry_frame.pack(fill='x')
-            
-            entry = tk.Entry(entry_frame, width=35, 
-                           font=('SF Pro Display', 12),
+            # Entry with custom styling
+            entry = tk.Entry(center, width=30, 
+                           font=('Helvetica Neue', 11),
                            bg=self.colors['bg_light'], 
                            fg=self.colors['text_light'],
-                           insertbackground=accent_color,
+                           insertbackground=self.colors['accent_cyan'],
                            relief=tk.FLAT,
-                           bd=0,
-                           highlightthickness=0)
-            entry.pack(padx=2, pady=2, ipady=8)
-            
+                           bd=2,
+                           highlightthickness=2,
+                           highlightbackground=self.colors['bg_light'],
+                           highlightcolor=self.colors['accent_cyan'])
+            entry.grid(row=idx, column=1, padx=5, pady=8)
             if default_val:
                 entry.insert(0, default_val)
-                entry.config(fg=self.colors['text_dim'])
-                
-                # Add focus events for placeholder effect
-                def on_focus_in(e, ent=entry, color=accent_color):
-                    if ent.get() in ["127.0.0.1", "5555", "5556"]:
-                        ent.config(fg=self.colors['text_light'])
-                
-                def on_focus_out(e, ent=entry):
-                    if not ent.get():
-                        ent.config(fg=self.colors['text_dim'])
-                
-                entry.bind('<FocusIn>', on_focus_in)
-                entry.bind('<FocusOut>', on_focus_out)
-            
             setattr(self, attr_name, entry)
         
-        # Stylish connect button with gradient effect
-        btn_container = tk.Frame(center, bg=self.colors['bg_medium'])
-        btn_container.grid(row=7, column=0, columnspan=2, pady=30)
-        
-        self.connect_btn = tk.Button(btn_container, text="🚀  CONNECT TO SERVER", 
+        # Stylish connect button
+        self.connect_btn = tk.Button(center, text="🚀 CONNECT", 
                                      command=self.connect_to_server,
-                                     font=('SF Pro Display', 13, 'bold'),
+                                     font=('Helvetica Neue', 13, 'bold'),
                                      bg=self.colors['accent_cyan'],
-                                     fg='#000000',
-                                     activebackground=self.colors['accent_purple'],
-                                     activeforeground='#000000',
+                                     fg=self.colors['bg_dark'],
+                                     activebackground=self.colors['accent_green'],
+                                     activeforeground=self.colors['bg_dark'],
                                      relief=tk.FLAT,
                                      bd=0,
-                                     padx=50,
-                                     pady=15,
+                                     padx=40,
+                                     pady=12,
                                      cursor='hand2')
-        self.connect_btn.pack()
-        
-        # Hover effect
-        def on_enter(e):
-            self.connect_btn.config(bg=self.colors['accent_purple'])
-        def on_leave(e):
-            self.connect_btn.config(bg=self.colors['accent_cyan'])
-        
-        self.connect_btn.bind('<Enter>', on_enter)
-        self.connect_btn.bind('<Leave>', on_leave)
+        self.connect_btn.grid(row=7, column=0, columnspan=2, pady=25)
         
         # Status label
         self.status_label = tk.Label(center, text="", 
-                                     font=('SF Pro Display', 11),
+                                     font=('Helvetica Neue', 10),
                                      bg=self.colors['bg_medium'], 
                                      fg=self.colors['error'])
-        self.status_label.grid(row=8, column=0, columnspan=2, pady=(10, 0))
+        self.status_label.grid(row=8, column=0, columnspan=2)
     def send_message(self, data):
      """Send a JSON message via TCP to the server"""
      if self.tcp_socket:
@@ -309,60 +259,20 @@ class LANClient:
         # Configure main window
         self.master.configure(bg=self.colors['bg_dark'])
         
-        # Top bar with user info and controls
-        top_bar = tk.Frame(self.master, bg=self.colors['bg_medium'], height=60)
+        # Top bar with user info
+        top_bar = tk.Frame(self.master, bg=self.colors['bg_medium'], height=50)
         top_bar.pack(side=tk.TOP, fill=tk.X)
         top_bar.pack_propagate(False)
         
-        # Left side - User info
-        left_info = tk.Frame(top_bar, bg=self.colors['bg_medium'])
-        left_info.pack(side=tk.LEFT, padx=20)
-        
-        # Connection status indicator (pulsing green dot)
-        status_dot = tk.Label(left_info, text="⬤", 
-                             font=('SF Pro Display', 14),
-                             bg=self.colors['bg_medium'], 
-                             fg=self.colors['success'])
-        status_dot.pack(side=tk.LEFT, padx=(0, 8))
-        
-        user_label = tk.Label(left_info, text=f"{self.username}", 
-                font=('SF Pro Display', 13, 'bold'),
+        tk.Label(top_bar, text=f"👤 {self.username}", 
+                font=('Helvetica Neue', 12, 'bold'),
                 bg=self.colors['bg_medium'], 
-                fg=self.colors['text_light'])
-        user_label.pack(side=tk.LEFT)
+                fg=self.colors['accent_cyan']).pack(side=tk.LEFT, padx=20)
         
-        server_label = tk.Label(left_info, text=f"connected to {self.server_ip}", 
-                font=('SF Pro Display', 10),
+        tk.Label(top_bar, text=f"📡 Connected to {self.server_ip}", 
+                font=('Helvetica Neue', 10),
                 bg=self.colors['bg_medium'], 
-                fg=self.colors['text_dim'])
-        server_label.pack(side=tk.LEFT, padx=(10, 0))
-        
-        # Right side - Large clear QUIT button
-        quit_container = tk.Frame(top_bar, bg=self.colors['bg_medium'])
-        quit_container.pack(side=tk.RIGHT, padx=15, pady=10)
-        
-        quit_btn = tk.Button(quit_container, text="⏻  QUIT", 
-                            command=self.on_closing,
-                            font=('SF Pro Display', 11, 'bold'),
-                            bg=self.colors['accent_red'],
-                            fg='#000000',
-                            activebackground='#ff1744',
-                            activeforeground='#000000',
-                            relief=tk.FLAT,
-                            bd=0,
-                            padx=25,
-                            pady=10,
-                            cursor='hand2')
-        quit_btn.pack()
-        
-        # Hover effect for quit button
-        def on_quit_enter(e):
-            quit_btn.config(bg='#ff1744', font=('SF Pro Display', 11, 'bold'))
-        def on_quit_leave(e):
-            quit_btn.config(bg=self.colors['accent_red'], font=('SF Pro Display', 11, 'bold'))
-        
-        quit_btn.bind('<Enter>', on_quit_enter)
-        quit_btn.bind('<Leave>', on_quit_leave)
+                fg=self.colors['text_dim']).pack(side=tk.LEFT, padx=10)
         
         # Create main layout with styled frames
         # Top: Video grid
@@ -408,11 +318,11 @@ class LANClient:
         users_frame.pack(side=tk.LEFT, fill=tk.BOTH, padx=(0, 5))
         
         self.users_listbox = tk.Listbox(users_frame, width=20,
-                                        font=('SF Pro Display', 10),
+                                        font=('Helvetica Neue', 10),
                                         bg=self.colors['bg_dark'],
                                         fg=self.colors['text_light'],
                                         selectbackground=self.colors['accent_cyan'],
-                                        selectforeground='#000000',
+                                        selectforeground=self.colors['bg_dark'],
                                         relief=tk.FLAT,
                                         bd=0,
                                         highlightthickness=0)
@@ -425,7 +335,7 @@ class LANClient:
         
         self.chat_display = scrolledtext.ScrolledText(chat_frame, height=10, 
                                                       state=tk.DISABLED, wrap=tk.WORD,
-                                                      font=('SF Pro Display', 10),
+                                                      font=('Helvetica Neue', 10),
                                                       bg=self.colors['bg_dark'],
                                                       fg=self.colors['text_light'],
                                                       relief=tk.FLAT,
@@ -437,13 +347,13 @@ class LANClient:
         chat_input_frame.pack(fill=tk.X, padx=5, pady=5)
         
         self.chat_entry = tk.Entry(chat_input_frame,
-                                   font=('SF Pro Display', 11),
+                                   font=('Helvetica Neue', 10),
                                    bg=self.colors['bg_light'],
                                    fg=self.colors['text_light'],
                                    insertbackground=self.colors['accent_cyan'],
                                    relief=tk.FLAT,
-                                   bd=0)
-        self.chat_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 8), ipady=8)
+                                   bd=2)
+        self.chat_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5), ipady=5)
         self.chat_entry.bind('<Return>', lambda e: self.send_chat())
         
         send_btn = self._create_control_button(chat_input_frame, "📤 Send", self.send_chat, self.colors['accent_cyan'])
@@ -457,11 +367,11 @@ class LANClient:
         upload_btn.pack(fill=tk.X, padx=5, pady=5)
         
         self.files_listbox = tk.Listbox(file_frame, width=25, height=8,
-                                        font=('SF Pro Display', 9),
+                                        font=('Helvetica Neue', 9),
                                         bg=self.colors['bg_dark'],
                                         fg=self.colors['text_light'],
                                         selectbackground=self.colors['accent_purple'],
-                                        selectforeground='#000000',
+                                        selectforeground=self.colors['bg_dark'],
                                         relief=tk.FLAT,
                                         bd=0,
                                         highlightthickness=0)
@@ -475,67 +385,33 @@ class LANClient:
     
     def _create_styled_frame(self, parent, title):
         """Create a styled frame with title"""
-        # Outer container with subtle border
-        outer = tk.Frame(parent, bg=self.colors['border'], bd=0)
-        container = tk.Frame(outer, bg=self.colors['bg_medium'], bd=0)
-        container.pack(padx=1, pady=1, fill=tk.BOTH, expand=True)
+        container = tk.Frame(parent, bg=self.colors['bg_medium'], relief=tk.FLAT, bd=0)
         
-        # Title bar with gradient-like effect
-        title_bar = tk.Frame(container, bg=self.colors['bg_medium'], height=40)
+        title_bar = tk.Frame(container, bg=self.colors['bg_medium'], height=35)
         title_bar.pack(side=tk.TOP, fill=tk.X)
         title_bar.pack_propagate(False)
         
-        # Title with icon
-        title_label = tk.Label(title_bar, text=title, 
-                font=('SF Pro Display', 13, 'bold'),
+        tk.Label(title_bar, text=title, 
+                font=('Helvetica Neue', 12, 'bold'),
                 bg=self.colors['bg_medium'], 
-                fg=self.colors['text_light'])
-        title_label.pack(side=tk.LEFT, padx=15, pady=8)
+                fg=self.colors['accent_cyan']).pack(side=tk.LEFT, padx=10, pady=5)
         
-        # Subtle divider line
-        divider = tk.Frame(container, bg=self.colors['border'], height=1)
-        divider.pack(fill=tk.X)
-        
-        return outer
+        return container
     
     def _create_control_button(self, parent, text, command, color):
-        """Create a styled control button with hover effects"""
-        # Determine text color - black for all buttons for better visibility
-        btn = tk.Button(parent, text=text, 
+        """Create a styled control button"""
+        return tk.Button(parent, text=text, 
                         command=command,
-                        font=('SF Pro Display', 11, 'bold'),
+                        font=('Helvetica Neue', 10, 'bold'),
                         bg=color,
-                        fg='#000000',  # Black text for all buttons
-                        activebackground=color,
-                        activeforeground='#000000',
+                        fg=self.colors['bg_dark'],
+                        activebackground=self.colors['accent_green'],
+                        activeforeground=self.colors['bg_dark'],
                         relief=tk.FLAT,
                         bd=0,
-                        padx=20,
-                        pady=10,
+                        padx=15,
+                        pady=8,
                         cursor='hand2')
-        
-        # Add hover effects
-        def on_enter(e):
-            btn.config(bg=self._lighten_color(color))
-        def on_leave(e):
-            btn.config(bg=color)
-        
-        btn.bind('<Enter>', on_enter)
-        btn.bind('<Leave>', on_leave)
-        
-        return btn
-    
-    def _lighten_color(self, hex_color):
-        """Lighten a hex color slightly for hover effect"""
-        # Simple lightening - just for visual effect
-        color_map = {
-            self.colors['accent_cyan']: '#7eb8ff',
-            self.colors['accent_purple']: '#d4a3ff',
-            self.colors['accent_green']: '#56c96a',
-            self.colors['accent_orange']: '#ffad33',
-            self.colors['accent_red']: '#ff6961'
-        }
-        return color_map.get(hex_color, hex_color)
     
     def toggle_video(self):
         """Toggle video streaming"""
@@ -1141,12 +1017,8 @@ class LANClient:
             # Create grid for video frames
             num_videos = len(self.video_frames)
             if num_videos == 0:
-                label = tk.Label(self.video_container, 
-                               text="📹 No active video streams\n\nClick 'Start Video' to begin", 
-                               font=('Helvetica Neue', 13),
-                               anchor=tk.CENTER, 
-                               bg=self.colors['bg_dark'], 
-                               fg=self.colors['text_dim'])
+                label = tk.Label(self.video_container, text="No active video streams", 
+                               anchor=tk.CENTER, bg='gray20', fg='white')
                 label.pack(expand=True, fill=tk.BOTH)
                 self.master.after(200, self.update_video_grid)
                 return
@@ -1160,22 +1032,15 @@ class LANClient:
                 col = i % cols
                 
                 try:
-                    # Create frame container with modern styling
-                    video_frame = tk.Frame(self.video_container, 
-                                         bg=self.colors['bg_light'],
-                                         relief=tk.FLAT,
-                                         highlightbackground=self.colors['accent_cyan'],
-                                         highlightthickness=2)
-                    video_frame.grid(row=row, column=col, padx=8, pady=8, sticky='nsew')
+                    # Create frame container
+                    video_frame = tk.Frame(self.video_container, relief=tk.SOLID, 
+                                         borderwidth=2, bg='black')
+                    video_frame.grid(row=row, column=col, padx=5, pady=5, sticky='nsew')
                     
-                    # Username label with gradient-like effect
-                    name_label = tk.Label(video_frame, 
-                                        text=f"👤 {username}", 
-                                        bg=self.colors['bg_medium'], 
-                                        fg=self.colors['accent_cyan'], 
-                                        font=('Helvetica Neue', 10, 'bold'),
-                                        pady=5)
-                    name_label.pack(side=tk.TOP, fill=tk.X)
+                    # Username label
+                    name_label = tk.Label(video_frame, text=username, bg='black', 
+                                        fg='white', font=('Arial', 10, 'bold'))
+                    name_label.pack(side=tk.TOP, pady=2)
                     
                     # Video display
                     # Convert BGR to RGB
@@ -1184,9 +1049,9 @@ class LANClient:
                     img = Image.fromarray(rgb_frame)
                     photo = ImageTk.PhotoImage(img)
                     
-                    video_label = tk.Label(video_frame, image=photo, bg=self.colors['bg_dark'])
+                    video_label = tk.Label(video_frame, image=photo, bg='black')
                     video_label.image = photo  # Keep reference
-                    video_label.pack(expand=True, fill=tk.BOTH, padx=2, pady=2)
+                    video_label.pack(expand=True, fill=tk.BOTH)
                     
                 except Exception as e:
                     # Silently skip this frame, will try again in next update
