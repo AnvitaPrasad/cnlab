@@ -24,9 +24,30 @@ import time
 class LANClient:
     def __init__(self, master):
         self.master = master
-        self.master.title("LAN Communication System")
-        self.master.geometry("1200x800")
+        self.master.title("🌐 LAN Collaboration Suite")
+        self.master.geometry("1400x900")
         self.master.protocol("WM_DELETE_WINDOW", self.on_closing)
+        
+        # Sleek modern color scheme - Deep dark theme with neon accents
+        self.colors = {
+            'bg_dark': '#0d1117',           # Deep dark background
+            'bg_medium': '#161b22',         # Card background
+            'bg_light': '#21262d',          # Input background
+            'bg_hover': '#30363d',          # Hover state
+            'accent_cyan': '#58a6ff',       # Bright cyan
+            'accent_purple': '#bc8cff',     # Soft purple
+            'accent_green': '#3fb950',      # Green success
+            'accent_red': '#f85149',        # Red accent
+            'accent_orange': '#ff9500',     # Orange accent
+            'text_light': '#c9d1d9',        # Light text
+            'text_dim': '#8b949e',          # Dimmed text
+            'border': '#30363d',            # Border color
+            'success': '#3fb950',
+            'error': '#f85149'
+        }
+        
+        # Configure main window background
+        self.master.configure(bg=self.colors['bg_dark'])
         
         # Connection state
         self.connected = False
@@ -64,35 +85,127 @@ class LANClient:
     
     def build_connection_ui(self):
         """Build connection dialog"""
-        frame = ttk.Frame(self.master, padding="20")
-        frame.pack(expand=True)
+        # Create styled frame
+        frame = tk.Frame(self.master, bg=self.colors['bg_dark'])
+        frame.pack(expand=True, fill=tk.BOTH)
         
-        ttk.Label(frame, text="LAN Communication System", font=('Arial', 16, 'bold')).grid(row=0, column=0, columnspan=2, pady=10)
+        # Center container with rounded effect
+        center = tk.Frame(frame, bg=self.colors['bg_medium'], padx=50, pady=50)
+        center.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
         
-        ttk.Label(frame, text="Username:").grid(row=1, column=0, sticky='e', padx=5, pady=5)
-        self.username_entry = ttk.Entry(frame, width=30)
-        self.username_entry.grid(row=1, column=1, padx=5, pady=5)
+        # Large icon/logo area
+        logo_frame = tk.Frame(center, bg=self.colors['bg_medium'])
+        logo_frame.grid(row=0, column=0, columnspan=2, pady=(0, 20))
         
-        ttk.Label(frame, text="Server IP:").grid(row=2, column=0, sticky='e', padx=5, pady=5)
-        self.server_entry = ttk.Entry(frame, width=30)
-        self.server_entry.grid(row=2, column=1, padx=5, pady=5)
-        self.server_entry.insert(0, "192.168.1.100")
+        # Title with modern styling
+        title = tk.Label(logo_frame, text="🌐", 
+                        font=('SF Pro Display', 48),
+                        bg=self.colors['bg_medium'], 
+                        fg=self.colors['accent_cyan'])
+        title.pack()
         
-        ttk.Label(frame, text="TCP Port:").grid(row=3, column=0, sticky='e', padx=5, pady=5)
-        self.tcp_port_entry = ttk.Entry(frame, width=30)
-        self.tcp_port_entry.grid(row=3, column=1, padx=5, pady=5)
-        self.tcp_port_entry.insert(0, "5555")
+        title_text = tk.Label(logo_frame, text="LAN Collaboration Suite", 
+                        font=('SF Pro Display', 26, 'bold'),
+                        bg=self.colors['bg_medium'], 
+                        fg=self.colors['text_light'])
+        title_text.pack(pady=(10, 0))
         
-        ttk.Label(frame, text="UDP Port:").grid(row=4, column=0, sticky='e', padx=5, pady=5)
-        self.udp_port_entry = ttk.Entry(frame, width=30)
-        self.udp_port_entry.grid(row=4, column=1, padx=5, pady=5)
-        self.udp_port_entry.insert(0, "5556")
+        subtitle = tk.Label(logo_frame, text="Connect • Collaborate • Communicate", 
+                           font=('SF Pro Display', 12),
+                           bg=self.colors['bg_medium'], 
+                           fg=self.colors['text_dim'])
+        subtitle.pack(pady=(5, 0))
         
-        self.connect_btn = ttk.Button(frame, text="Connect", command=self.connect_to_server)
-        self.connect_btn.grid(row=5, column=0, columnspan=2, pady=20)
+        # Divider line
+        divider = tk.Frame(center, bg=self.colors['border'], height=1)
+        divider.grid(row=1, column=0, columnspan=2, sticky='ew', pady=20)
         
-        self.status_label = ttk.Label(frame, text="", foreground="red")
-        self.status_label.grid(row=6, column=0, columnspan=2)
+        # Input fields with modern styling
+        fields = [
+            ("👤  Username", "username_entry", "", self.colors['accent_cyan']),
+            ("🌐  Server IP", "server_entry", "127.0.0.1", self.colors['accent_purple']),
+            ("🔌  TCP Port", "tcp_port_entry", "5555", self.colors['accent_green']),
+            ("📡  UDP Port", "udp_port_entry", "5556", self.colors['accent_orange'])
+        ]
+        
+        for idx, (label_text, attr_name, default_val, accent_color) in enumerate(fields, start=2):
+            # Container for each field
+            field_container = tk.Frame(center, bg=self.colors['bg_medium'])
+            field_container.grid(row=idx, column=0, columnspan=2, pady=10, sticky='ew')
+            
+            # Label
+            label = tk.Label(field_container, text=label_text, 
+                           font=('SF Pro Display', 11),
+                           bg=self.colors['bg_medium'], 
+                           fg=self.colors['text_dim'],
+                           anchor='w')
+            label.pack(anchor='w', pady=(0, 5))
+            
+            # Entry with custom styling and border
+            entry_frame = tk.Frame(field_container, bg=accent_color, bd=0)
+            entry_frame.pack(fill='x')
+            
+            entry = tk.Entry(entry_frame, width=35, 
+                           font=('SF Pro Display', 12),
+                           bg=self.colors['bg_light'], 
+                           fg=self.colors['text_light'],
+                           insertbackground=accent_color,
+                           relief=tk.FLAT,
+                           bd=0,
+                           highlightthickness=0)
+            entry.pack(padx=2, pady=2, ipady=8)
+            
+            if default_val:
+                entry.insert(0, default_val)
+                entry.config(fg=self.colors['text_dim'])
+                
+                # Add focus events for placeholder effect
+                def on_focus_in(e, ent=entry, color=accent_color):
+                    if ent.get() in ["127.0.0.1", "5555", "5556"]:
+                        ent.config(fg=self.colors['text_light'])
+                
+                def on_focus_out(e, ent=entry):
+                    if not ent.get():
+                        ent.config(fg=self.colors['text_dim'])
+                
+                entry.bind('<FocusIn>', on_focus_in)
+                entry.bind('<FocusOut>', on_focus_out)
+            
+            setattr(self, attr_name, entry)
+        
+        # Stylish connect button with gradient effect
+        btn_container = tk.Frame(center, bg=self.colors['bg_medium'])
+        btn_container.grid(row=7, column=0, columnspan=2, pady=30)
+        
+        self.connect_btn = tk.Button(btn_container, text="🚀  CONNECT TO SERVER", 
+                                     command=self.connect_to_server,
+                                     font=('SF Pro Display', 13, 'bold'),
+                                     bg=self.colors['accent_cyan'],
+                                     fg='#000000',
+                                     activebackground=self.colors['accent_purple'],
+                                     activeforeground='#000000',
+                                     relief=tk.FLAT,
+                                     bd=0,
+                                     padx=50,
+                                     pady=15,
+                                     cursor='hand2')
+        self.connect_btn.pack()
+        
+        # Hover effect
+        def on_enter(e):
+            self.connect_btn.config(bg=self.colors['accent_purple'])
+        def on_leave(e):
+            self.connect_btn.config(bg=self.colors['accent_cyan'])
+        
+        self.connect_btn.bind('<Enter>', on_enter)
+        self.connect_btn.bind('<Leave>', on_leave)
+        
+        # Status label
+        self.status_label = tk.Label(center, text="", 
+                                     font=('SF Pro Display', 11),
+                                     bg=self.colors['bg_medium'], 
+                                     fg=self.colors['error'])
+        self.status_label.grid(row=8, column=0, columnspan=2, pady=(10, 0))
     def send_message(self, data):
      """Send a JSON message via TCP to the server"""
      if self.tcp_socket:
@@ -139,7 +252,7 @@ class LANClient:
             tcp_port = self.server_tcp_port
             udp_port = self.server_udp_port
             
-            self.status_label.config(text="Connecting...", foreground="blue")
+            self.status_label.config(text="Connecting...", foreground=self.colors['accent_cyan'])
             self.master.update()
             
             # Create TCP socket
@@ -181,7 +294,7 @@ class LANClient:
                 raise Exception("Registration failed")
                 
         except Exception as e:
-            self.status_label.config(text=f"Connection failed: {e}", foreground="red")
+            self.status_label.config(text=f"Connection failed: {e}", foreground=self.colors['error'])
             if self.tcp_socket:
                 self.tcp_socket.close()
             if self.udp_socket:
@@ -193,78 +306,236 @@ class LANClient:
         for widget in self.master.winfo_children():
             widget.destroy()
         
-        # Create main layout
-        # Top: Video grid
-        video_frame = ttk.LabelFrame(self.master, text="Video Conference", padding="5")
-        video_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=5, pady=5)
+        # Configure main window
+        self.master.configure(bg=self.colors['bg_dark'])
         
-        self.video_container = ttk.Frame(video_frame)
-        self.video_container.pack(fill=tk.BOTH, expand=True)
+        # Top bar with user info and controls
+        top_bar = tk.Frame(self.master, bg=self.colors['bg_medium'], height=60)
+        top_bar.pack(side=tk.TOP, fill=tk.X)
+        top_bar.pack_propagate(False)
+        
+        # Left side - User info
+        left_info = tk.Frame(top_bar, bg=self.colors['bg_medium'])
+        left_info.pack(side=tk.LEFT, padx=20)
+        
+        # Connection status indicator (pulsing green dot)
+        status_dot = tk.Label(left_info, text="⬤", 
+                             font=('SF Pro Display', 14),
+                             bg=self.colors['bg_medium'], 
+                             fg=self.colors['success'])
+        status_dot.pack(side=tk.LEFT, padx=(0, 8))
+        
+        user_label = tk.Label(left_info, text=f"{self.username}", 
+                font=('SF Pro Display', 13, 'bold'),
+                bg=self.colors['bg_medium'], 
+                fg=self.colors['text_light'])
+        user_label.pack(side=tk.LEFT)
+        
+        server_label = tk.Label(left_info, text=f"connected to {self.server_ip}", 
+                font=('SF Pro Display', 10),
+                bg=self.colors['bg_medium'], 
+                fg=self.colors['text_dim'])
+        server_label.pack(side=tk.LEFT, padx=(10, 0))
+        
+        # Right side - Large clear QUIT button
+        quit_container = tk.Frame(top_bar, bg=self.colors['bg_medium'])
+        quit_container.pack(side=tk.RIGHT, padx=15, pady=10)
+        
+        quit_btn = tk.Button(quit_container, text="⏻  QUIT", 
+                            command=self.on_closing,
+                            font=('SF Pro Display', 11, 'bold'),
+                            bg=self.colors['accent_red'],
+                            fg='#000000',
+                            activebackground='#ff1744',
+                            activeforeground='#000000',
+                            relief=tk.FLAT,
+                            bd=0,
+                            padx=25,
+                            pady=10,
+                            cursor='hand2')
+        quit_btn.pack()
+        
+        # Hover effect for quit button
+        def on_quit_enter(e):
+            quit_btn.config(bg='#ff1744', font=('SF Pro Display', 11, 'bold'))
+        def on_quit_leave(e):
+            quit_btn.config(bg=self.colors['accent_red'], font=('SF Pro Display', 11, 'bold'))
+        
+        quit_btn.bind('<Enter>', on_quit_enter)
+        quit_btn.bind('<Leave>', on_quit_leave)
+        
+        # Create main layout with styled frames
+        # Top: Video grid
+        video_frame = self._create_styled_frame(self.master, "📹 Video Conference")
+        video_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=(10, 5))
+        
+        self.video_container = tk.Frame(video_frame, bg=self.colors['bg_dark'])
+        self.video_container.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         
         # Video controls
-        video_controls = ttk.Frame(video_frame)
+        video_controls = tk.Frame(video_frame, bg=self.colors['bg_medium'])
         video_controls.pack(side=tk.BOTTOM, fill=tk.X, pady=5)
         
-        self.video_btn = ttk.Button(video_controls, text="Start Video", command=self.toggle_video)
-        self.video_btn.pack(side=tk.LEFT, padx=5)
+        self.video_btn = self._create_control_button(video_controls, "📹 Start Video", self.toggle_video, self.colors['accent_cyan'])
+        self.video_btn.pack(side=tk.LEFT, padx=10, pady=5)
         
-        self.audio_btn = ttk.Button(video_controls, text="Start Audio", command=self.toggle_audio)
-        self.audio_btn.pack(side=tk.LEFT, padx=5)
+        self.audio_btn = self._create_control_button(video_controls, "🎤 Start Audio", self.toggle_audio, self.colors['accent_purple'])
+        self.audio_btn.pack(side=tk.LEFT, padx=5, pady=5)
         
         # Middle: Screen sharing
-        screen_frame = ttk.LabelFrame(self.master, text="Screen Sharing", padding="5")
-        screen_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=5, pady=5)
+        screen_frame = self._create_styled_frame(self.master, "🖥️ Screen Sharing")
+        screen_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=5)
         
-        self.screen_label = ttk.Label(screen_frame, text="No presentation active", anchor=tk.CENTER)
-        self.screen_label.pack(fill=tk.BOTH, expand=True)
+        self.screen_label = tk.Label(screen_frame, text="No presentation active", 
+                                     font=('Helvetica Neue', 14),
+                                     bg=self.colors['bg_dark'], 
+                                     fg=self.colors['text_dim'],
+                                     anchor=tk.CENTER)
+        self.screen_label.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         
-        screen_controls = ttk.Frame(screen_frame)
+        screen_controls = tk.Frame(screen_frame, bg=self.colors['bg_medium'])
         screen_controls.pack(side=tk.BOTTOM, fill=tk.X, pady=5)
         
-        self.present_btn = ttk.Button(screen_controls, text="Start Presenting", command=self.toggle_presenting)
-        self.present_btn.pack(side=tk.LEFT, padx=5)
+        self.present_btn = self._create_control_button(screen_controls, "🖥️ Start Presenting", self.toggle_presenting, self.colors['accent_green'])
+        self.present_btn.pack(side=tk.LEFT, padx=10, pady=5)
         
         # Bottom: Chat and controls
-        bottom_frame = ttk.Frame(self.master)
-        bottom_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, padx=5, pady=5)
+        bottom_frame = tk.Frame(self.master, bg=self.colors['bg_dark'])
+        bottom_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, padx=10, pady=(5, 10))
         
         # Left: Users list
-        users_frame = ttk.LabelFrame(bottom_frame, text="Users", padding="5")
-        users_frame.pack(side=tk.LEFT, fill=tk.BOTH, padx=5)
+        users_frame = self._create_styled_frame(bottom_frame, "👥 Online Users")
+        users_frame.pack(side=tk.LEFT, fill=tk.BOTH, padx=(0, 5))
         
-        self.users_listbox = tk.Listbox(users_frame, width=20)
-        self.users_listbox.pack(fill=tk.BOTH, expand=True)
+        self.users_listbox = tk.Listbox(users_frame, width=20,
+                                        font=('SF Pro Display', 10),
+                                        bg=self.colors['bg_dark'],
+                                        fg=self.colors['text_light'],
+                                        selectbackground=self.colors['accent_cyan'],
+                                        selectforeground='#000000',
+                                        relief=tk.FLAT,
+                                        bd=0,
+                                        highlightthickness=0)
+        self.users_listbox.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         self.update_users_list()
         
         # Center: Chat
-        chat_frame = ttk.LabelFrame(bottom_frame, text="Group Chat", padding="5")
+        chat_frame = self._create_styled_frame(bottom_frame, "💬 Group Chat")
         chat_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
         
-        self.chat_display = scrolledtext.ScrolledText(chat_frame, height=10, state=tk.DISABLED, wrap=tk.WORD)
-        self.chat_display.pack(fill=tk.BOTH, expand=True)
+        self.chat_display = scrolledtext.ScrolledText(chat_frame, height=10, 
+                                                      state=tk.DISABLED, wrap=tk.WORD,
+                                                      font=('SF Pro Display', 10),
+                                                      bg=self.colors['bg_dark'],
+                                                      fg=self.colors['text_light'],
+                                                      relief=tk.FLAT,
+                                                      bd=0,
+                                                      highlightthickness=0)
+        self.chat_display.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         
-        chat_input_frame = ttk.Frame(chat_frame)
-        chat_input_frame.pack(fill=tk.X, pady=5)
+        chat_input_frame = tk.Frame(chat_frame, bg=self.colors['bg_medium'])
+        chat_input_frame.pack(fill=tk.X, padx=5, pady=5)
         
-        self.chat_entry = ttk.Entry(chat_input_frame)
-        self.chat_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+        self.chat_entry = tk.Entry(chat_input_frame,
+                                   font=('SF Pro Display', 11),
+                                   bg=self.colors['bg_light'],
+                                   fg=self.colors['text_light'],
+                                   insertbackground=self.colors['accent_cyan'],
+                                   relief=tk.FLAT,
+                                   bd=0)
+        self.chat_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 8), ipady=8)
         self.chat_entry.bind('<Return>', lambda e: self.send_chat())
         
-        ttk.Button(chat_input_frame, text="Send", command=self.send_chat).pack(side=tk.LEFT)
+        send_btn = self._create_control_button(chat_input_frame, "📤 Send", self.send_chat, self.colors['accent_cyan'])
+        send_btn.pack(side=tk.LEFT)
         
         # Right: File sharing
-        file_frame = ttk.LabelFrame(bottom_frame, text="File Sharing", padding="5")
-        file_frame.pack(side=tk.LEFT, fill=tk.BOTH, padx=5)
+        file_frame = self._create_styled_frame(bottom_frame, "📁 Files")
+        file_frame.pack(side=tk.LEFT, fill=tk.BOTH, padx=(5, 0))
         
-        ttk.Button(file_frame, text="Upload File", command=self.upload_file).pack(fill=tk.X, pady=2)
+        upload_btn = self._create_control_button(file_frame, "📤 Upload", self.upload_file, self.colors['accent_green'])
+        upload_btn.pack(fill=tk.X, padx=5, pady=5)
         
-        self.files_listbox = tk.Listbox(file_frame, width=25, height=8)
-        self.files_listbox.pack(fill=tk.BOTH, expand=True, pady=5)
+        self.files_listbox = tk.Listbox(file_frame, width=25, height=8,
+                                        font=('SF Pro Display', 9),
+                                        bg=self.colors['bg_dark'],
+                                        fg=self.colors['text_light'],
+                                        selectbackground=self.colors['accent_purple'],
+                                        selectforeground='#000000',
+                                        relief=tk.FLAT,
+                                        bd=0,
+                                        highlightthickness=0)
+        self.files_listbox.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         
-        ttk.Button(file_frame, text="Download Selected", command=self.download_file).pack(fill=tk.X, pady=2)
+        download_btn = self._create_control_button(file_frame, "📥 Download", self.download_file, self.colors['accent_cyan'])
+        download_btn.pack(fill=tk.X, padx=5, pady=5)
         
         # Initialize video display
         self.update_video_grid()
+    
+    def _create_styled_frame(self, parent, title):
+        """Create a styled frame with title"""
+        # Outer container with subtle border
+        outer = tk.Frame(parent, bg=self.colors['border'], bd=0)
+        container = tk.Frame(outer, bg=self.colors['bg_medium'], bd=0)
+        container.pack(padx=1, pady=1, fill=tk.BOTH, expand=True)
+        
+        # Title bar with gradient-like effect
+        title_bar = tk.Frame(container, bg=self.colors['bg_medium'], height=40)
+        title_bar.pack(side=tk.TOP, fill=tk.X)
+        title_bar.pack_propagate(False)
+        
+        # Title with icon
+        title_label = tk.Label(title_bar, text=title, 
+                font=('SF Pro Display', 13, 'bold'),
+                bg=self.colors['bg_medium'], 
+                fg=self.colors['text_light'])
+        title_label.pack(side=tk.LEFT, padx=15, pady=8)
+        
+        # Subtle divider line
+        divider = tk.Frame(container, bg=self.colors['border'], height=1)
+        divider.pack(fill=tk.X)
+        
+        return outer
+    
+    def _create_control_button(self, parent, text, command, color):
+        """Create a styled control button with hover effects"""
+        # Determine text color - black for all buttons for better visibility
+        btn = tk.Button(parent, text=text, 
+                        command=command,
+                        font=('SF Pro Display', 11, 'bold'),
+                        bg=color,
+                        fg='#000000',  # Black text for all buttons
+                        activebackground=color,
+                        activeforeground='#000000',
+                        relief=tk.FLAT,
+                        bd=0,
+                        padx=20,
+                        pady=10,
+                        cursor='hand2')
+        
+        # Add hover effects
+        def on_enter(e):
+            btn.config(bg=self._lighten_color(color))
+        def on_leave(e):
+            btn.config(bg=color)
+        
+        btn.bind('<Enter>', on_enter)
+        btn.bind('<Leave>', on_leave)
+        
+        return btn
+    
+    def _lighten_color(self, hex_color):
+        """Lighten a hex color slightly for hover effect"""
+        # Simple lightening - just for visual effect
+        color_map = {
+            self.colors['accent_cyan']: '#7eb8ff',
+            self.colors['accent_purple']: '#d4a3ff',
+            self.colors['accent_green']: '#56c96a',
+            self.colors['accent_orange']: '#ffad33',
+            self.colors['accent_red']: '#ff6961'
+        }
+        return color_map.get(hex_color, hex_color)
     
     def toggle_video(self):
         """Toggle video streaming"""
@@ -298,7 +569,7 @@ class LANClient:
                 
                 self.video_streaming = True
                 # Update button in main thread
-                self.master.after(0, lambda: self.video_btn.config(text="Stop Video"))
+                self.master.after(0, lambda: self.video_btn.config(text="⏹️ Stop Video"))
                 threading.Thread(target=self.stream_video, daemon=True).start()
                 print(f"✅ Video started successfully for {self.username}")
             except Exception as e:
@@ -316,7 +587,7 @@ class LANClient:
             time.sleep(0.2)
             
             # Update button in main thread
-            self.master.after(0, lambda: self.video_btn.config(text="Start Video"))
+            self.master.after(0, lambda: self.video_btn.config(text="📹 Start Video"))
             
             # Safely close camera in separate thread
             threading.Thread(target=self._close_camera, daemon=True).start()
@@ -463,7 +734,7 @@ class LANClient:
                 
                 self.audio_streaming = True
                 # Update button in main thread
-                self.master.after(0, lambda: self.audio_btn.config(text="Stop Audio"))
+                self.master.after(0, lambda: self.audio_btn.config(text="⏹️ Stop Audio"))
                 threading.Thread(target=self.stream_audio, daemon=True).start()
                 print(f"🎤 Audio started successfully for {self.username}")
             except Exception as e:
@@ -493,7 +764,7 @@ class LANClient:
             time.sleep(0.3)
             
             # Update button in main thread
-            self.master.after(0, lambda: self.audio_btn.config(text="Start Audio"))
+            self.master.after(0, lambda: self.audio_btn.config(text="🎤 Start Audio"))
             
             # Safely close streams in a separate thread to avoid blocking
             threading.Thread(target=self._close_audio_streams, daemon=True).start()
@@ -561,12 +832,12 @@ class LANClient:
         if not self.presenting:
             self.send_message({'type': 'start_presenting'})
             self.presenting = True
-            self.present_btn.config(text="Stop Presenting")
+            self.present_btn.config(text="⏹️ Stop Presenting")
             threading.Thread(target=self.stream_screen, daemon=True).start()
         else:
             self.send_message({'type': 'stop_presenting'})
             self.presenting = False
-            self.present_btn.config(text="Start Presenting")
+            self.present_btn.config(text="🖥️ Start Presenting")
     
     def stream_screen(self):
         """Stream screen to server"""
@@ -731,12 +1002,12 @@ class LANClient:
             if self.presenter:
                 self.master.after(0, lambda: self.screen_label.config(text=f"{self.presenter} is presenting..."))
                 if self.presenter == self.username:
-                    self.master.after(0, lambda: self.present_btn.config(text="Stop Presenting", state=tk.NORMAL))
+                    self.master.after(0, lambda: self.present_btn.config(text="⏹️ Stop Presenting", state=tk.NORMAL))
                 else:
-                    self.master.after(0, lambda: self.present_btn.config(text="Start Presenting", state=tk.DISABLED))
+                    self.master.after(0, lambda: self.present_btn.config(text="🖥️ Start Presenting", state=tk.DISABLED))
             else:
                 self.master.after(0, lambda: self.screen_label.config(text="No presentation active", image=''))
-                self.master.after(0, lambda: self.present_btn.config(text="Start Presenting", state=tk.NORMAL))
+                self.master.after(0, lambda: self.present_btn.config(text="🖥️ Start Presenting", state=tk.NORMAL))
         
         elif msg_type == 'screen_frame':
             if msg['presenter'] == self.presenter and msg['presenter'] != self.username:
@@ -870,8 +1141,12 @@ class LANClient:
             # Create grid for video frames
             num_videos = len(self.video_frames)
             if num_videos == 0:
-                label = tk.Label(self.video_container, text="No active video streams", 
-                               anchor=tk.CENTER, bg='gray20', fg='white')
+                label = tk.Label(self.video_container, 
+                               text="📹 No active video streams\n\nClick 'Start Video' to begin", 
+                               font=('Helvetica Neue', 13),
+                               anchor=tk.CENTER, 
+                               bg=self.colors['bg_dark'], 
+                               fg=self.colors['text_dim'])
                 label.pack(expand=True, fill=tk.BOTH)
                 self.master.after(200, self.update_video_grid)
                 return
@@ -885,15 +1160,22 @@ class LANClient:
                 col = i % cols
                 
                 try:
-                    # Create frame container
-                    video_frame = tk.Frame(self.video_container, relief=tk.SOLID, 
-                                         borderwidth=2, bg='black')
-                    video_frame.grid(row=row, column=col, padx=5, pady=5, sticky='nsew')
+                    # Create frame container with modern styling
+                    video_frame = tk.Frame(self.video_container, 
+                                         bg=self.colors['bg_light'],
+                                         relief=tk.FLAT,
+                                         highlightbackground=self.colors['accent_cyan'],
+                                         highlightthickness=2)
+                    video_frame.grid(row=row, column=col, padx=8, pady=8, sticky='nsew')
                     
-                    # Username label
-                    name_label = tk.Label(video_frame, text=username, bg='black', 
-                                        fg='white', font=('Arial', 10, 'bold'))
-                    name_label.pack(side=tk.TOP, pady=2)
+                    # Username label with gradient-like effect
+                    name_label = tk.Label(video_frame, 
+                                        text=f"👤 {username}", 
+                                        bg=self.colors['bg_medium'], 
+                                        fg=self.colors['accent_cyan'], 
+                                        font=('Helvetica Neue', 10, 'bold'),
+                                        pady=5)
+                    name_label.pack(side=tk.TOP, fill=tk.X)
                     
                     # Video display
                     # Convert BGR to RGB
@@ -902,9 +1184,9 @@ class LANClient:
                     img = Image.fromarray(rgb_frame)
                     photo = ImageTk.PhotoImage(img)
                     
-                    video_label = tk.Label(video_frame, image=photo, bg='black')
+                    video_label = tk.Label(video_frame, image=photo, bg=self.colors['bg_dark'])
                     video_label.image = photo  # Keep reference
-                    video_label.pack(expand=True, fill=tk.BOTH)
+                    video_label.pack(expand=True, fill=tk.BOTH, padx=2, pady=2)
                     
                 except Exception as e:
                     # Silently skip this frame, will try again in next update
